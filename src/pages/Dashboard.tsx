@@ -57,19 +57,22 @@ export function Dashboard() {
 
   const recent = sessions.slice(-10)
 
-  const scoreData = recent.map((s, i) => ({
-    session: `#${sessions.length - recent.length + i + 1}`,
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+
+  const scoreData = recent.map(s => ({
+    session: formatDate(s.date),
     score: s.totalScore,
   }))
 
-  const errorData = recent.map((s, i) => {
+  const errorData = recent.map(s => {
     const counts: Record<string, number> = { homophone: 0, punctuation: 0, contraction: 0, spelling: 0 }
     for (const sentence of s.sentences) {
       for (const e of sentence.errors) {
         counts[e.type] = (counts[e.type] || 0) + 1
       }
     }
-    return { session: `#${sessions.length - recent.length + i + 1}`, ...counts }
+    return { session: formatDate(s.date), ...counts }
   })
 
   const toNextLevel = 3 - (child?.consecutiveHighScores ?? 0)
