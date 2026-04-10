@@ -3,29 +3,37 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useTTS } from './useTTS'
 
-const mockSpeak = vi.fn()
-const mockCancel = vi.fn()
+vi.mock('../api/functions', () => ({
+  generateAudio: vi.fn().mockResolvedValue('blob:mock-url'),
+}))
+
+const mockPause = vi.fn()
+const mockPlay = vi.fn().mockResolvedValue(undefined)
 
 beforeEach(() => {
-  mockSpeak.mockClear()
-  mockCancel.mockClear()
-  Object.defineProperty(window, 'speechSynthesis', {
-    value: { speak: mockSpeak, cancel: mockCancel, speaking: false },
-    writable: true,
-  })
-  global.SpeechSynthesisUtterance = vi.fn().mockImplementation((text) => ({ text })) as any
+  mockPause.mockClear()
+  mockPlay.mockClear()
+  global.Audio = vi.fn().mockImplementation(() => ({
+    play: mockPlay,
+    pause: mockPause,
+    onended: null,
+    src: 'blob:mock-url',
+  })) as any
+  global.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url')
+  global.URL.revokeObjectURL = vi.fn()
 })
 
 describe('useTTS', () => {
-  it('calls speechSynthesis.speak with the text', () => {
+  it('calls generateAudio and plays audio on speak', async () => {
     const { result } = renderHook(() => useTTS())
-    act(() => result.current.speak('Hello world'))
-    expect(mockSpeak).toHaveBeenCalledTimes(1)
+    await act(() => result.current.speak('Hello world'))
+    expect(mockPlay).toHaveBeenCalledTimes(1)
   })
 
-  it('calls speechSynthesis.cancel on stop', () => {
+  it('pauses audio on stop', async () => {
     const { result } = renderHook(() => useTTS())
+    await act(() => result.current.speak('Hello world'))
     act(() => result.current.stop())
-    expect(mockCancel).toHaveBeenCalledTimes(1)
+    expect(mockPause).toHaveBeenCalledTimes(1)
   })
 })

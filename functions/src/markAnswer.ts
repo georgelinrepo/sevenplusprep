@@ -36,22 +36,33 @@ export const markAnswer = onCall(
       throw new HttpsError('invalid-argument', 'correct and childAnswer are required')
     }
 
+    console.log('markAnswer called', { correct, childAnswer })
     const client = new Anthropic({ apiKey: anthropicKey.value() })
 
-    const response = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 512,
-      messages: [{ role: 'user', content: MARKING_PROMPT(correct, childAnswer) }],
-    })
+    let response
+    try {
+      response = await client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 512,
+        messages: [{ role: 'user', content: MARKING_PROMPT(correct, childAnswer) }],
+      })
+    } catch (e) {
+      console.error('Anthropic API error:', e)
+      throw new HttpsError('internal', `Anthropic API error: ${e instanceof Error ? e.message : String(e)}`)
+    }
 
-    const text = (response.content[0] as { text: string }).text.trim()
+    const raw = (response.content[0] as { text: string }).text.trim()
+    console.log('Anthropic response:', raw)
+    // Strip markdown code fences if present (```json ... ``` or ``` ... ```)
+    const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
     try {
       const result = JSON.parse(text)
       if (typeof result.score !== 'number' || !Array.isArray(result.errors)) {
         throw new Error('Invalid response shape')
       }
       return result
-    } catch {
+    } catch (e) {
+      console.error('Parse error:', e, 'Raw text:', text)
       throw new HttpsError('internal', 'Failed to parse marking response')
     }
   }

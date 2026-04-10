@@ -59,7 +59,8 @@ Return ONLY a JSON array of 3 strings, no markdown fences, no explanation. Examp
       }],
     })
 
-    const text = (response.content[0] as { text: string }).text.trim()
+    const raw = (response.content[0] as { text: string }).text.trim()
+    const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
     try {
       const sentences: string[] = JSON.parse(text)
       if (!Array.isArray(sentences) || sentences.length !== 3) {

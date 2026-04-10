@@ -23,6 +23,7 @@ export function Dictation() {
   const [childAnswer, setChildAnswer] = useState('')
   const [results, setResults] = useState<SentenceResult[]>([])
   const [marking, setMarking] = useState(false)
+  const [markError, setMarkError] = useState<string | null>(null)
   const [currentResult, setCurrentResult] = useState<SentenceResult | null>(null)
 
   useEffect(() => {
@@ -64,17 +65,23 @@ export function Dictation() {
   async function handleMarkAnswer() {
     if (!sentences[currentIndex] || !childAnswer.trim()) return
     setMarking(true)
-    const result = await markAnswer(sentences[currentIndex], childAnswer)
-    const sentenceResult: SentenceResult = {
-      correct: sentences[currentIndex],
-      childAnswer,
-      score: result.score,
-      errors: result.errors,
+    setMarkError(null)
+    try {
+      const result = await markAnswer(sentences[currentIndex], childAnswer)
+      const sentenceResult: SentenceResult = {
+        correct: sentences[currentIndex],
+        childAnswer,
+        score: result.score,
+        errors: result.errors,
+      }
+      setCurrentResult(sentenceResult)
+      setResults(prev => [...prev, sentenceResult])
+      setPhase('marked')
+    } catch (e) {
+      setMarkError(e instanceof Error ? e.message : 'Marking failed — please try again')
+    } finally {
+      setMarking(false)
     }
-    setCurrentResult(sentenceResult)
-    setResults(prev => [...prev, sentenceResult])
-    setPhase('marked')
-    setMarking(false)
   }
 
   function handleNext() {
@@ -136,6 +143,9 @@ export function Dictation() {
           >
             {marking ? 'Marking...' : 'Mark Answer'}
           </button>
+          {markError && (
+            <p style={{ color: '#dc3545', marginTop: 8, textAlign: 'center' }}>{markError}</p>
+          )}
         </div>
       )}
 
