@@ -1,2 +1,3 @@
-// Cloud Functions — implementations added in Tasks 5 and 6
-export {}
+// functions/src/index.ts
+export { generateSentences } from './generateSentences'
+export { markAnswer } from './markAnswer'
