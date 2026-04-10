@@ -29,7 +29,7 @@ Score guide: 100 = perfect, deduct ~15 points per error. Minimum 0.
 If the answer is perfect, return { "score": 100, "errors": [] }.`
 
 export const markAnswer = onCall(
-  { secrets: [anthropicKey] },
+  { secrets: [anthropicKey], region: 'europe-west2' },
   async (request) => {
     const { correct, childAnswer } = request.data as { correct: string; childAnswer: string }
     if (!correct || !childAnswer) {

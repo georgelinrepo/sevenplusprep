@@ -38,7 +38,7 @@ Each sentence should:
 }
 
 export const generateSentences = onCall(
-  { secrets: [anthropicKey] },
+  { secrets: [anthropicKey], region: 'europe-west2' },
   async (request) => {
     const { level } = request.data as { level: string }
     if (!LEVEL_PROMPTS[level]) {
