@@ -1,7 +1,7 @@
 // src/pages/Dashboard.tsx
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { getChildren, getSessions } from '../api/children'
 import { SentenceResultCard } from '../components/SentenceResult'
 import type { Child, Session } from '../types'
@@ -118,16 +118,16 @@ export function Dashboard() {
 
           <h3 style={{ marginTop: 32 }}>Errors by Category (last 10 sessions)</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={errorData}>
+            <LineChart data={errorData}>
               <XAxis dataKey="session" />
-              <YAxis />
+              <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              <Bar dataKey="homophone" fill="#dc3545" />
-              <Bar dataKey="punctuation" fill="#fd7e14" />
-              <Bar dataKey="contraction" fill="#6f42c1" />
-              <Bar dataKey="spelling" fill="#0d6efd" />
-            </BarChart>
+              <Line type="monotone" dataKey="homophone" stroke="#dc3545" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="punctuation" stroke="#fd7e14" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="contraction" stroke="#6f42c1" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="spelling" stroke="#0d6efd" strokeWidth={2} dot={{ r: 3 }} />
+            </LineChart>
           </ResponsiveContainer>
 
           <h3 style={{ marginTop: 32 }}>Session History</h3>
