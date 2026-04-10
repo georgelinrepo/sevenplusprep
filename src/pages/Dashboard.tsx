@@ -3,7 +3,42 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts'
 import { getChildren, getSessions } from '../api/children'
+import { SentenceResultCard } from '../components/SentenceResult'
 import type { Child, Session } from '../types'
+
+function SessionHistoryItem({ session, index }: { session: Session; index: number }) {
+  const [expanded, setExpanded] = useState(false)
+  const date = new Date(session.date).toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  })
+  const scoreColour = session.totalScore >= 80 ? '#198754' : session.totalScore >= 50 ? '#fd7e14' : '#dc3545'
+
+  return (
+    <div style={{ border: '1px solid #dee2e6', borderRadius: 8, marginBottom: 8, overflow: 'hidden' }}>
+      <button
+        onClick={() => setExpanded(e => !e)}
+        style={{ width: '100%', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', textAlign: 'left' }}
+      >
+        <span style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+          <span style={{ fontWeight: 700, color: '#6c757d', minWidth: 32 }}>#{index}</span>
+          <span style={{ fontSize: 14, color: '#6c757d' }}>{date}</span>
+          <span style={{ fontSize: 13, background: '#f8f9fa', borderRadius: 12, padding: '2px 10px' }}>{session.level}</span>
+        </span>
+        <span style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+          <span style={{ fontWeight: 700, color: scoreColour }}>{session.totalScore}%</span>
+          <span style={{ color: '#6c757d' }}>{expanded ? '▲' : '▼'}</span>
+        </span>
+      </button>
+      {expanded && (
+        <div style={{ padding: '0 16px 16px' }}>
+          {session.sentences.map((r, i) => (
+            <SentenceResultCard key={i} result={r} index={i} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export function Dashboard() {
   const { childId } = useParams<{ childId: string }>()
@@ -41,6 +76,9 @@ export function Dashboard() {
   const toDropLevel = 3 - (child?.consecutiveLowScores ?? 0)
 
   if (!child) return <div style={{ textAlign: 'center', padding: 48 }}>Loading...</div>
+
+  // Show sessions newest first
+  const sortedSessions = [...sessions].reverse()
 
   return (
     <div style={{ maxWidth: 700, margin: '40px auto', padding: 24 }}>
@@ -91,6 +129,15 @@ export function Dashboard() {
               <Bar dataKey="spelling" fill="#0d6efd" />
             </BarChart>
           </ResponsiveContainer>
+
+          <h3 style={{ marginTop: 32 }}>Session History</h3>
+          {sortedSessions.map((session, i) => (
+            <SessionHistoryItem
+              key={session.id}
+              session={session}
+              index={sessions.length - i}
+            />
+          ))}
         </>
       )}
     </div>
