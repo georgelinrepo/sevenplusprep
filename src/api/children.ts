@@ -71,6 +71,14 @@ export async function saveSession(child: Child, session: Omit<Session, 'id'>): P
 export async function getSessions(childId: string): Promise<Session[]> {
   const snap = await getDocs(collection(db, 'children', childId, 'sessions'))
   return snap.docs
-    .map(d => ({ id: d.id, ...d.data() } as Session))
+    .map(d => {
+      const data = d.data()
+      return {
+        id: d.id,
+        ...data,
+        // Firestore serverTimestamp() comes back as a Timestamp object — convert to ISO string
+        date: data.date?.toDate?.()?.toISOString() ?? data.date ?? '',
+      } as Session
+    })
     .sort((a, b) => a.date.localeCompare(b.date))
 }
