@@ -30,12 +30,14 @@ export const markMathsSession = onCall(
       .map((q, i) => `Q${i + 1}: "${q.question}" | Expected: "${q.expected}" | Child wrote: "${childAnswers[i]}"`)
       .join('\n')
 
-    const response = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
-      messages: [{
-        role: 'user',
-        content: `Mark these 15 mental maths answers for a 6-7 year old child.
+    let response
+    try {
+      response = await client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 4096,
+        messages: [{
+          role: 'user',
+          content: `Mark these 15 mental maths answers for a 6-7 year old child.
 
 ${questionList}
 
@@ -62,8 +64,12 @@ Return ONLY valid JSON, no markdown fences:
   ],
   "totalScore": 80
 }`,
-      }],
-    })
+        }],
+      })
+    } catch (e) {
+      console.error('Anthropic API error:', e)
+      throw new HttpsError('internal', `Anthropic API error: ${e instanceof Error ? e.message : String(e)}`)
+    }
 
     const raw = (response.content[0] as { text: string }).text.trim()
     const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
@@ -71,6 +77,14 @@ Return ONLY valid JSON, no markdown fences:
       const result = JSON.parse(text)
       if (!Array.isArray(result.results) || result.results.length !== 15 || typeof result.totalScore !== 'number') {
         throw new Error('Invalid response shape')
+      }
+      const hasValidShape = result.results.every((r: unknown) =>
+        typeof (r as Record<string, unknown>).correct === 'boolean' &&
+        typeof (r as Record<string, unknown>).feedback === 'string' &&
+        typeof (r as Record<string, unknown>).category === 'string'
+      )
+      if (!hasValidShape) {
+        throw new Error('Result objects have unexpected shape')
       }
       return result
     } catch (e) {

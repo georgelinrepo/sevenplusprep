@@ -20,12 +20,14 @@ export const generateMathsQuestions = onCall(
 
     const client = new Anthropic({ apiKey: anthropicKey.value() })
 
-    const response = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      messages: [{
-        role: 'user',
-        content: `Generate exactly 15 mental maths questions for a 6-7 year old child practising for the St Paul's Juniors (Colet Court) 7+ entrance exam.
+    let response
+    try {
+      response = await client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2048,
+        messages: [{
+          role: 'user',
+          content: `Generate exactly 15 mental maths questions for a 6-7 year old child practising for the St Paul's Juniors (Colet Court) 7+ entrance exam.
 
 Difficulty: ${LEVEL_CALIBRATION[level]}
 
@@ -42,8 +44,12 @@ Return ONLY a JSON array of exactly 15 objects, no markdown fences:
 [
   { "question": "What is six multiplied by seven?", "expected": "42", "category": "tables" }
 ]`,
-      }],
-    })
+        }],
+      })
+    } catch (e) {
+      console.error('Anthropic API error:', e)
+      throw new HttpsError('internal', `Anthropic API error: ${e instanceof Error ? e.message : String(e)}`)
+    }
 
     const raw = (response.content[0] as { text: string }).text.trim()
     const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
@@ -51,6 +57,14 @@ Return ONLY a JSON array of exactly 15 objects, no markdown fences:
       const questions = JSON.parse(text)
       if (!Array.isArray(questions) || questions.length !== 15) {
         throw new Error('Expected array of 15 questions')
+      }
+      const hasValidShape = questions.every((q: unknown) =>
+        typeof (q as Record<string, unknown>).question === 'string' &&
+        typeof (q as Record<string, unknown>).expected === 'string' &&
+        typeof (q as Record<string, unknown>).category === 'string'
+      )
+      if (!hasValidShape) {
+        throw new Error('Question objects have unexpected shape')
       }
       return { questions }
     } catch {
