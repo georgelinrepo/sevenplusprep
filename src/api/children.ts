@@ -119,12 +119,8 @@ export async function getMathsSessions(childId: string): Promise<MathsSession[]>
 
 export async function deleteChild(childId: string): Promise<void> {
   const sessionsSnap = await getDocs(collection(db, 'children', childId, 'sessions'))
-  for (const d of sessionsSnap.docs) {
-    await deleteDoc(d.ref)
-  }
+  await Promise.all(sessionsSnap.docs.map(d => deleteDoc(d.ref)))
   const mathsSnap = await getDocs(collection(db, 'children', childId, 'mathsSessions'))
-  for (const d of mathsSnap.docs) {
-    await deleteDoc(d.ref)
-  }
+  await Promise.all(mathsSnap.docs.map(d => deleteDoc(d.ref)))
   await deleteDoc(doc(db, 'children', childId))
 }
