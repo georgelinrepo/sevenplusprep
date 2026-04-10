@@ -1,7 +1,7 @@
 // src/api/children.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { evaluateProgression } from './children'
-import type { Child } from '../types'
+import type { Child, Level } from '../types'
 
 describe('evaluateProgression', () => {
   const baseChild: Child = {
@@ -58,5 +58,29 @@ describe('evaluateProgression', () => {
     const result = evaluateProgression(child, 65)
     expect(result.consecutiveHighScores).toBe(0)
     expect(result.consecutiveLowScores).toBe(0)
+  })
+})
+
+describe('evaluateProgression — maths pseudo-child pattern', () => {
+  it('levels up after 3 consecutive high scores via pseudo-child', () => {
+    const pseudo = {
+      level: 'Beginner' as Level,
+      consecutiveHighScores: 3,
+      consecutiveLowScores: 0,
+    }
+    const result = evaluateProgression(pseudo, 85)
+    expect(result.level).toBe('Developing')
+    expect(result.consecutiveHighScores).toBe(0)
+  })
+
+  it('increments counter on high score via pseudo-child', () => {
+    const pseudo = {
+      level: 'Beginner' as Level,
+      consecutiveHighScores: 0,
+      consecutiveLowScores: 0,
+    }
+    const result = evaluateProgression(pseudo, 85)
+    expect(result.consecutiveHighScores).toBe(1)
+    expect(result.level).toBe('Beginner')
   })
 })

@@ -11,7 +11,7 @@ const LOW_THRESHOLD = 50
 const CONSECUTIVE_NEEDED = 3
 
 export function evaluateProgression(
-  child: Child,
+  child: Pick<Child, 'level' | 'consecutiveHighScores' | 'consecutiveLowScores'>,
   sessionScore: number
 ): Pick<Child, 'level' | 'consecutiveHighScores' | 'consecutiveLowScores'> {
   const currentIndex = LEVELS.indexOf(child.level)
