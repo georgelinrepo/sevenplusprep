@@ -1,11 +1,11 @@
 // src/hooks/useCountdown.ts
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 
 export function useCountdown() {
   const [seconds, setSeconds] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  function start(from: number, onComplete?: () => void) {
+  const start = useCallback((from: number, onComplete?: () => void) => {
     if (intervalRef.current) clearInterval(intervalRef.current)
     setSeconds(from)
     let remaining = from
@@ -19,12 +19,12 @@ export function useCountdown() {
         setSeconds(remaining)
       }
     }, 1000)
-  }
+  }, [])
 
-  function reset() {
+  const reset = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current)
     setSeconds(0)
-  }
+  }, [])
 
   return { seconds, start, reset }
 }

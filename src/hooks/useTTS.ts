@@ -1,18 +1,16 @@
 // src/hooks/useTTS.ts
-import { useRef } from 'react'
+import { useRef, useCallback } from 'react'
 import { generateAudio } from '../api/functions'
 
 export function useTTS() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  async function speak(text: string, onEnd?: () => void) {
-    // Stop any currently playing audio
+  const speak = useCallback(async (text: string, onEnd?: () => void) => {
     if (audioRef.current) {
       audioRef.current.pause()
       URL.revokeObjectURL(audioRef.current.src)
       audioRef.current = null
     }
-
     try {
       const url = await generateAudio(text)
       const audio = new Audio(url)
@@ -24,17 +22,17 @@ export function useTTS() {
       await audio.play()
     } catch (e) {
       console.error('TTS error:', e)
-      onEnd?.() // advance the session flow even if TTS fails
+      onEnd?.()
     }
-  }
+  }, [])
 
-  function stop() {
+  const stop = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause()
       URL.revokeObjectURL(audioRef.current.src)
       audioRef.current = null
     }
-  }
+  }, [])
 
   return { speak, stop }
 }

@@ -1,5 +1,5 @@
 // src/pages/MathsPlay.tsx
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useTTS } from '../hooks/useTTS'
 import { useCountdown } from '../hooks/useCountdown'
@@ -19,35 +19,56 @@ export function MathsPlay() {
   const { speak, stop } = useTTS()
   const { seconds, start: startCountdown, reset: resetCountdown } = useCountdown()
 
-  const questions: MathsQuestion[] = state?.questions ?? []
+  // Stabilise questions — they come from router state and never change
+  const questionsRef = useRef<MathsQuestion[]>(state?.questions ?? [])
+  const questions = questionsRef.current
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [phase, setPhase] = useState<Phase>('read1')
   const [pausedPhase, setPausedPhase] = useState<Phase | null>(null)
+  const [pausedSeconds, setPausedSeconds] = useState(0)
 
   useEffect(() => {
     if (!questions[currentIndex]) return
+    let cancelled = false
 
     if (phase === 'read1') {
-      speak(questions[currentIndex].question, () => setPhase('pause1'))
+      speak(questions[currentIndex].question, () => {
+        if (!cancelled) setPhase('pause1')
+      })
     } else if (phase === 'pause1') {
-      startCountdown(5, () => setPhase('read2'))
+      startCountdown(5, () => {
+        if (!cancelled) setPhase('read2')
+      })
     } else if (phase === 'read2') {
-      speak(questions[currentIndex].question, () => setPhase('countdown'))
+      speak(questions[currentIndex].question, () => {
+        if (!cancelled) setPhase('countdown')
+      })
     } else if (phase === 'countdown') {
-      startCountdown(15, () => {
-        if (currentIndex < 14) {
-          setCurrentIndex(i => i + 1)
-          resetCountdown()
-          setPhase('read1')
-        } else {
-          navigate(`/maths-entry/${childId}`, { state: { questions } })
+      startCountdown(pausedSeconds > 0 ? pausedSeconds : 15, () => {
+        if (!cancelled) {
+          setPausedSeconds(0)
+          if (currentIndex < 14) {
+            setCurrentIndex(i => i + 1)
+            resetCountdown()
+            setPhase('read1')
+          } else {
+            navigate(`/maths-entry/${childId}`, { state: { questions } })
+          }
         }
       })
     }
-  }, [phase, currentIndex])
+
+    return () => {
+      cancelled = true
+    }
+  }, [phase, currentIndex, questions, speak, startCountdown, resetCountdown, navigate, childId, pausedSeconds])
 
   function handlePause() {
     stop()
+    if (phase === 'countdown' || phase === 'pause1') {
+      setPausedSeconds(seconds)
+    }
     resetCountdown()
     setPausedPhase(phase)
     setPhase('paused')
@@ -63,7 +84,7 @@ export function MathsPlay() {
     return <div style={{ textAlign: 'center', padding: 48 }}>No questions — go back and start again.</div>
   }
 
-  const progress = (currentIndex / 15) * 100
+  const progress = ((currentIndex + 1) / 15) * 100
 
   return (
     <div style={{ maxWidth: 600, margin: '40px auto', padding: 24 }}>
@@ -93,7 +114,7 @@ export function MathsPlay() {
         <div style={{ textAlign: 'center', padding: 40 }}>
           <div style={{ fontSize: 64, marginBottom: 16 }}>🔊</div>
           <div style={{ fontSize: 20, color: '#6c757d' }}>
-            {phase === 'read1' ? 'Listen carefully...' : 'Write your answer...'}
+            {phase === 'read1' ? 'Listen carefully...' : 'Listen again...'}
           </div>
         </div>
       )}
