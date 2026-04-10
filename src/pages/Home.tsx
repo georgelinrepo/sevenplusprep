@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChildCard } from '../components/ChildCard'
 import { AddChildModal } from '../components/AddChildModal'
-import { getChildren, addChild } from '../api/children'
+import { getChildren, addChild, deleteChild } from '../api/children'
 import type { Child } from '../types'
 
 export function Home() {
@@ -21,12 +21,17 @@ export function Home() {
     setChildren(prev => [...prev, child])
   }
 
+  async function handleDeleteChild(childId: string) {
+    await deleteChild(childId)
+    setChildren(prev => prev.filter(c => c.id !== childId))
+  }
+
   if (loading) return <div style={{ textAlign: 'center', padding: 48 }}>Loading...</div>
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: 32 }}>
       <h1 style={{ textAlign: 'center', marginBottom: 8 }}>SevenPlusPrep</h1>
-      <p style={{ textAlign: 'center', color: '#6c757d', marginBottom: 40 }}>SPJ 7+ Dictation Practice</p>
+      <p style={{ textAlign: 'center', color: '#6c757d', marginBottom: 40 }}>SPJ 7+ Practice</p>
 
       {children.length === 0 && (
         <p style={{ textAlign: 'center', color: '#6c757d' }}>No children yet — add one to get started.</p>
@@ -37,8 +42,8 @@ export function Home() {
           <ChildCard
             key={child.id}
             child={child}
-            onStart={() => navigate(`/session-start/${child.id}`)}
-            onViewProgress={() => navigate(`/dashboard/${child.id}`)}
+            onSelect={() => navigate(`/child/${child.id}`)}
+            onDelete={() => handleDeleteChild(child.id)}
           />
         ))}
       </div>
