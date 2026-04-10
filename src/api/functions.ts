@@ -1,7 +1,7 @@
 // src/api/functions.ts
 import { httpsCallable } from 'firebase/functions'
 import { fns } from '../firebase'
-import type { Level, DictationError } from '../types'
+import type { Level, DictationError, MathsQuestion, MathsQuestionResult } from '../types'
 
 const _generateSentences = httpsCallable<{ level: Level }, { sentences: string[] }>(
   fns, 'generateSentences'
@@ -15,6 +15,16 @@ const _markAnswer = httpsCallable<
   { correct: string; childAnswer: string },
   { score: number; errors: DictationError[] }
 >(fns, 'markAnswer')
+
+const _generateMathsQuestions = httpsCallable<
+  { level: Level },
+  { questions: MathsQuestion[] }
+>(fns, 'generateMathsQuestions')
+
+const _markMathsSession = httpsCallable<
+  { questions: MathsQuestion[]; childAnswers: string[] },
+  { results: MathsQuestionResult[]; totalScore: number }
+>(fns, 'markMathsSession')
 
 export async function generateSentences(level: Level): Promise<string[]> {
   const result = await _generateSentences({ level })
@@ -34,5 +44,18 @@ export async function markAnswer(
   childAnswer: string
 ): Promise<{ score: number; errors: DictationError[] }> {
   const result = await _markAnswer({ correct, childAnswer })
+  return result.data
+}
+
+export async function generateMathsQuestions(level: Level): Promise<MathsQuestion[]> {
+  const result = await _generateMathsQuestions({ level })
+  return result.data.questions
+}
+
+export async function markMathsSession(
+  questions: MathsQuestion[],
+  childAnswers: string[]
+): Promise<{ results: MathsQuestionResult[]; totalScore: number }> {
+  const result = await _markMathsSession({ questions, childAnswers })
   return result.data
 }

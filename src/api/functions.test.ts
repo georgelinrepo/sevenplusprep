@@ -12,9 +12,12 @@ vi.mock('../firebase', () => ({
 }))
 
 describe('functions api', () => {
-  it('exports generateSentences and markAnswer', async () => {
+  it('exports generateSentences, markAnswer, generateAudio, generateMathsQuestions, markMathsSession', async () => {
     const mod = await import('./functions')
     expect(typeof mod.generateSentences).toBe('function')
     expect(typeof mod.markAnswer).toBe('function')
+    expect(typeof mod.generateAudio).toBe('function')
+    expect(typeof mod.generateMathsQuestions).toBe('function')
+    expect(typeof mod.markMathsSession).toBe('function')
   })
 })
