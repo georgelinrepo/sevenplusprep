@@ -1,9 +1,9 @@
 // src/api/children.ts
 import {
-  collection, doc, addDoc, getDocs, updateDoc, serverTimestamp
+  collection, doc, addDoc, getDocs, updateDoc, deleteDoc, serverTimestamp
 } from 'firebase/firestore'
 import { db } from '../firebase'
-import type { Child, Level, Session } from '../types'
+import type { Child, Level, Session, MathsSession } from '../types'
 
 const LEVELS: Level[] = ['Beginner', 'Developing', 'Confident', 'Stretch']
 const HIGH_THRESHOLD = 80
@@ -79,9 +79,52 @@ export async function getSessions(childId: string): Promise<Session[]> {
       return {
         id: d.id,
         ...data,
-        // Firestore serverTimestamp() comes back as a Timestamp object — convert to ISO string
         date: data.date?.toDate?.()?.toISOString() ?? data.date ?? '',
       } as Session
     })
     .sort((a, b) => a.date.localeCompare(b.date))
+}
+
+export async function saveMathsSession(child: Child, session: Omit<MathsSession, 'id'>): Promise<void> {
+  await addDoc(
+    collection(db, 'children', child.id, 'mathsSessions'),
+    { ...session, date: serverTimestamp() }
+  )
+  const pseudo = {
+    level: child.mathsLevel,
+    consecutiveHighScores: child.mathsConsecutiveHighScores,
+    consecutiveLowScores: child.mathsConsecutiveLowScores,
+  }
+  const progression = evaluateProgression(pseudo, session.totalScore)
+  await updateDoc(doc(db, 'children', child.id), {
+    mathsLevel: progression.level,
+    mathsConsecutiveHighScores: progression.consecutiveHighScores,
+    mathsConsecutiveLowScores: progression.consecutiveLowScores,
+  })
+}
+
+export async function getMathsSessions(childId: string): Promise<MathsSession[]> {
+  const snap = await getDocs(collection(db, 'children', childId, 'mathsSessions'))
+  return snap.docs
+    .map(d => {
+      const data = d.data()
+      return {
+        id: d.id,
+        ...data,
+        date: data.date?.toDate?.()?.toISOString() ?? data.date ?? '',
+      } as MathsSession
+    })
+    .sort((a, b) => a.date.localeCompare(b.date))
+}
+
+export async function deleteChild(childId: string): Promise<void> {
+  const sessionsSnap = await getDocs(collection(db, 'children', childId, 'sessions'))
+  for (const d of sessionsSnap.docs) {
+    await deleteDoc(d.ref)
+  }
+  const mathsSnap = await getDocs(collection(db, 'children', childId, 'mathsSessions'))
+  for (const d of mathsSnap.docs) {
+    await deleteDoc(d.ref)
+  }
+  await deleteDoc(doc(db, 'children', childId))
 }

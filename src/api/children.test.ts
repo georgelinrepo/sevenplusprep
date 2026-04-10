@@ -87,3 +87,20 @@ describe('evaluateProgression — maths pseudo-child pattern', () => {
     expect(result.level).toBe('Beginner')
   })
 })
+
+describe('children API exports', () => {
+  it('exports saveMathsSession', async () => {
+    const mod = await import('./children')
+    expect(typeof mod.saveMathsSession).toBe('function')
+  })
+
+  it('exports getMathsSessions', async () => {
+    const mod = await import('./children')
+    expect(typeof mod.getMathsSessions).toBe('function')
+  })
+
+  it('exports deleteChild', async () => {
+    const mod = await import('./children')
+    expect(typeof mod.deleteChild).toBe('function')
+  })
+})
