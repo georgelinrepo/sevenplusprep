@@ -54,6 +54,9 @@ export async function addChild(name: string): Promise<Child> {
     level: 'Beginner' as Level,
     consecutiveHighScores: 0,
     consecutiveLowScores: 0,
+    mathsLevel: 'Beginner' as Level,
+    mathsConsecutiveHighScores: 0,
+    mathsConsecutiveLowScores: 0,
   }
   const ref = await addDoc(collection(db, 'children'), data)
   return { id: ref.id, ...data, createdAt: new Date().toISOString() }

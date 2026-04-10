@@ -18,8 +18,8 @@ export type MathsCategory =
 
 export interface DictationError {
   type: ErrorType
-  word: string
-  correction: string
+  word: string        // what the child wrote
+  correction: string  // what it should be
 }
 
 export interface SentenceResult {
