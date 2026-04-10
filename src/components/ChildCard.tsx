@@ -44,7 +44,7 @@ export function ChildCard({ child, onSelect, onDelete }: Props) {
         </button>
         <button
           onClick={handleDelete}
-          style={{ padding: '8px 12px', cursor: 'pointer', background: 'transparent', border: '1px solid #dee2e6', borderRadius: 8, color: '#dc3545' }}
+          style={{ padding: '8px 12px', cursor: 'pointer', background: 'transparent', border: '1px solid #dc3545', borderRadius: 8, color: '#dc3545' }}
         >
           Delete
         </button>

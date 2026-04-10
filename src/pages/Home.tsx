@@ -22,8 +22,13 @@ export function Home() {
   }
 
   async function handleDeleteChild(childId: string) {
-    await deleteChild(childId)
-    setChildren(prev => prev.filter(c => c.id !== childId))
+    try {
+      await deleteChild(childId)
+      setChildren(prev => prev.filter(c => c.id !== childId))
+    } catch (err) {
+      console.error('Failed to delete child:', err)
+      alert('Failed to delete. Please try again.')
+    }
   }
 
   if (loading) return <div style={{ textAlign: 'center', padding: 48 }}>Loading...</div>
