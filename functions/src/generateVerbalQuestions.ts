@@ -15,7 +15,7 @@ const VALID_TYPES = new Set(['synonym', 'odd_word_out', 'analogy', 'word_code', 
 export const generateVerbalQuestions = onCall(
   { secrets: [anthropicKey], region: 'europe-west2' },
   async (request) => {
-    const { level, paperLength } = request.data as { level: string; paperLength: number }
+    const { level, paperLength, recentQuestions } = request.data as { level: string; paperLength: number; recentQuestions?: string[] }
 
     if (!LEVEL_CALIBRATION[level]) {
       throw new HttpsError('invalid-argument', `Unknown level: ${level}`)
@@ -41,7 +41,7 @@ export const generateVerbalQuestions = onCall(
           content: `Generate exactly ${paperLength} verbal reasoning questions for a 6-7 year old child practising for the St Paul's Juniors (Colet Court) 7+ entrance exam.
 
 Difficulty: ${LEVEL_CALIBRATION[level]}
-
+${recentQuestions && recentQuestions.length > 0 ? `\nDo NOT reuse or closely paraphrase any of these recently seen questions:\n${recentQuestions.map(q => `- ${q}`).join('\n')}\n` : ''}
 Question type distribution (EXACT counts required): ${typeCounts}
 
 Ordering: questions must get progressively harder — easiest first, hardest last.

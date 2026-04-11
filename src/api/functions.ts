@@ -61,11 +61,11 @@ export async function markMathsSession(
 }
 
 const _generateVerbalQuestions = httpsCallable<
-  { level: Level; paperLength: number },
+  { level: Level; paperLength: number; recentQuestions?: string[] },
   { questions: VerbalQuestion[] }
 >(fns, 'generateVerbalQuestions')
 
-export async function generateVerbalQuestions(level: Level, paperLength: number): Promise<VerbalQuestion[]> {
-  const result = await _generateVerbalQuestions({ level, paperLength })
+export async function generateVerbalQuestions(level: Level, paperLength: number, recentQuestions?: string[]): Promise<VerbalQuestion[]> {
+  const result = await _generateVerbalQuestions({ level, paperLength, recentQuestions })
   return result.data.questions
 }

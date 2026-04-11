@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getChildren } from '../api/children'
+import { getChildren, getVerbalSessions } from '../api/children'
 import { generateVerbalQuestions } from '../api/functions'
 import type { Child, Level, VerbalQuestion } from '../types'
 
@@ -35,7 +35,11 @@ export function VerbalStart() {
     setGenerating(true)
     setError(null)
     try {
-      const questions: VerbalQuestion[] = await generateVerbalQuestions(selectedLevel, paperLength)
+      const recentSessions = await getVerbalSessions(child.id)
+      const recentQuestions = recentSessions
+        .slice(-5)
+        .flatMap(s => s.questions.map(q => q.question))
+      const questions: VerbalQuestion[] = await generateVerbalQuestions(selectedLevel, paperLength, recentQuestions)
       navigate(`/verbal-paper/${child.id}`, { state: { questions, level: selectedLevel, paperLength } })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to generate paper — please try again')
