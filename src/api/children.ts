@@ -3,7 +3,7 @@ import {
   collection, doc, addDoc, getDocs, updateDoc, deleteDoc, serverTimestamp
 } from 'firebase/firestore'
 import { db } from '../firebase'
-import type { Child, Level, Session, MathsSession } from '../types'
+import type { Child, Level, Session, MathsSession, VerbalSession } from '../types'
 
 const LEVELS: Level[] = ['Beginner', 'Developing', 'Confident', 'Stretch']
 const HIGH_THRESHOLD = 80
@@ -57,6 +57,9 @@ export async function addChild(name: string): Promise<Child> {
     mathsLevel: 'Beginner' as Level,
     mathsConsecutiveHighScores: 0,
     mathsConsecutiveLowScores: 0,
+    verbalLevel: 'Beginner' as Level,
+    verbalConsecutiveHighScores: 0,
+    verbalConsecutiveLowScores: 0,
   }
   const ref = await addDoc(collection(db, 'children'), data)
   return { id: ref.id, ...data, createdAt: new Date().toISOString() }
@@ -117,10 +120,44 @@ export async function getMathsSessions(childId: string): Promise<MathsSession[]>
     .sort((a, b) => a.date.localeCompare(b.date))
 }
 
+export async function saveVerbalSession(child: Child, session: Omit<VerbalSession, 'id'>): Promise<void> {
+  await addDoc(
+    collection(db, 'children', child.id, 'verbalSessions'),
+    { ...session, date: serverTimestamp() }
+  )
+  const pseudo = {
+    level: child.verbalLevel ?? 'Beginner',
+    consecutiveHighScores: child.verbalConsecutiveHighScores ?? 0,
+    consecutiveLowScores: child.verbalConsecutiveLowScores ?? 0,
+  }
+  const progression = evaluateProgression(pseudo, session.totalScore)
+  await updateDoc(doc(db, 'children', child.id), {
+    verbalLevel: progression.level,
+    verbalConsecutiveHighScores: progression.consecutiveHighScores,
+    verbalConsecutiveLowScores: progression.consecutiveLowScores,
+  })
+}
+
+export async function getVerbalSessions(childId: string): Promise<VerbalSession[]> {
+  const snap = await getDocs(collection(db, 'children', childId, 'verbalSessions'))
+  return snap.docs
+    .map(d => {
+      const data = d.data()
+      return {
+        id: d.id,
+        ...data,
+        date: data.date?.toDate?.()?.toISOString() ?? data.date ?? '',
+      } as VerbalSession
+    })
+    .sort((a, b) => a.date.localeCompare(b.date))
+}
+
 export async function deleteChild(childId: string): Promise<void> {
   const sessionsSnap = await getDocs(collection(db, 'children', childId, 'sessions'))
   await Promise.all(sessionsSnap.docs.map(d => deleteDoc(d.ref)))
   const mathsSnap = await getDocs(collection(db, 'children', childId, 'mathsSessions'))
   await Promise.all(mathsSnap.docs.map(d => deleteDoc(d.ref)))
+  const verbalSnap = await getDocs(collection(db, 'children', childId, 'verbalSessions'))
+  await Promise.all(verbalSnap.docs.map(d => deleteDoc(d.ref)))
   await deleteDoc(doc(db, 'children', childId))
 }
