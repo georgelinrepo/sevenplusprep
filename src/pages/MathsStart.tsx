@@ -1,12 +1,16 @@
+// src/pages/MathsStart.tsx
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getChildren } from '../api/children'
 import { generateMathsQuestions } from '../api/functions'
-import type { Child, MathsQuestion } from '../types'
+import type { Child, Level, MathsQuestion } from '../types'
+
+const LEVELS: Level[] = ['Beginner', 'Developing', 'Confident', 'Stretch']
 
 export function MathsStart() {
   const { childId } = useParams<{ childId: string }>()
   const [child, setChild] = useState<Child | null>(null)
+  const [selectedLevel, setSelectedLevel] = useState<Level>('Beginner')
   const [generating, setGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
@@ -14,7 +18,10 @@ export function MathsStart() {
   useEffect(() => {
     getChildren().then(children => {
       const found = children.find(c => c.id === childId)
-      if (found) setChild(found)
+      if (found) {
+        setChild(found)
+        setSelectedLevel(found.mathsLevel ?? 'Beginner')
+      }
     })
   }, [childId])
 
@@ -23,8 +30,8 @@ export function MathsStart() {
     setGenerating(true)
     setError(null)
     try {
-      const questions: MathsQuestion[] = await generateMathsQuestions(child.mathsLevel ?? 'Beginner')
-      navigate(`/maths-play/${child.id}`, { state: { questions } })
+      const questions: MathsQuestion[] = await generateMathsQuestions(selectedLevel)
+      navigate(`/maths-play/${child.id}`, { state: { questions, level: selectedLevel } })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to generate questions — please try again')
       setGenerating(false)
@@ -33,21 +40,42 @@ export function MathsStart() {
 
   if (!child) return <div style={{ textAlign: 'center', padding: 48 }}>Loading...</div>
 
+  const isRecommended = selectedLevel === (child.mathsLevel ?? 'Beginner')
+
   return (
     <div style={{ maxWidth: 500, margin: '80px auto', padding: 32, textAlign: 'center' }}>
       <h1>{child.name}</h1>
-      <div style={{ fontSize: 20, color: '#6c757d', marginBottom: 8 }}>
-        Maths level: <strong>{child.mathsLevel ?? 'Beginner'}</strong>
-      </div>
-      <p style={{ color: '#6c757d', marginBottom: 40 }}>
-        15 questions, each read aloud twice.<br />
-        Write answers on paper, then enter them at the end.
+      <p style={{ color: '#6c757d', marginBottom: 24 }}>
+        15 questions, each read aloud twice.<br />Write answers on paper, then enter them at the end.
       </p>
+
+      <div style={{ marginBottom: 32 }}>
+        <label style={{ display: 'block', fontWeight: 600, marginBottom: 8 }}>
+          Level
+          {isRecommended && (
+            <span style={{ marginLeft: 8, fontSize: 12, background: '#d1e7dd', color: '#0f5132', borderRadius: 10, padding: '2px 8px', fontWeight: 400 }}>
+              Recommended
+            </span>
+          )}
+        </label>
+        <select
+          value={selectedLevel}
+          onChange={e => setSelectedLevel(e.target.value as Level)}
+          style={{ width: '100%', padding: '10px 12px', fontSize: 16, borderRadius: 8, border: '1px solid #dee2e6', cursor: 'pointer' }}
+        >
+          {LEVELS.map(l => (
+            <option key={l} value={l}>
+              {l}{l === (child.mathsLevel ?? 'Beginner') ? ' (recommended)' : ''}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <button
         type="button"
         onClick={handleBegin}
         disabled={generating}
-        style={{ padding: '16px 40px', fontSize: 20, cursor: 'pointer', background: '#0d6efd', color: 'white', border: 'none', borderRadius: 12, fontWeight: 600 }}
+        style={{ padding: '16px 40px', fontSize: 20, cursor: generating ? 'not-allowed' : 'pointer', background: '#0d6efd', color: 'white', border: 'none', borderRadius: 12, fontWeight: 600 }}
       >
         {generating ? 'Generating questions...' : 'Begin Session'}
       </button>

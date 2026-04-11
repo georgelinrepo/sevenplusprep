@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { markMathsSession } from '../api/functions'
-import type { MathsQuestion } from '../types'
+import type { Level, MathsQuestion } from '../types'
 
 interface LocationState {
   questions: MathsQuestion[]
+  level: Level
 }
 
 export function MathsEntry() {
@@ -33,7 +34,7 @@ export function MathsEntry() {
     setError(null)
     try {
       const { results, totalScore } = await markMathsSession(questions, answers)
-      navigate(`/maths-results/${childId}`, { state: { results, totalScore } })
+      navigate(`/maths-results/${childId}`, { state: { results, totalScore, level: state?.level } })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Marking failed — please try again')
       setSubmitting(false)

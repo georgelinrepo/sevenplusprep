@@ -4,12 +4,13 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useTTS } from '../hooks/useTTS'
 import { useCountdown } from '../hooks/useCountdown'
 import { CountdownTimer } from '../components/CountdownTimer'
-import type { MathsQuestion } from '../types'
+import type { Level, MathsQuestion } from '../types'
 
 type Phase = 'read1' | 'pause1' | 'read2' | 'countdown' | 'paused'
 
 interface LocationState {
   questions: MathsQuestion[]
+  level: Level
 }
 
 export function MathsPlay() {
@@ -54,7 +55,7 @@ export function MathsPlay() {
             resetCountdown()
             setPhase('read1')
           } else {
-            navigate(`/maths-entry/${childId}`, { state: { questions } })
+            navigate(`/maths-entry/${childId}`, { state: { questions, level: state?.level } })
           }
         }
       })

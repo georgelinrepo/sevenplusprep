@@ -2,11 +2,12 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { getChildren, saveMathsSession } from '../api/children'
-import type { MathsQuestionResult } from '../types'
+import type { Level, MathsQuestionResult } from '../types'
 
 interface LocationState {
   results: MathsQuestionResult[]
   totalScore: number
+  level: Level
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -39,10 +40,16 @@ export function MathsResults() {
       if (!child) return
       saveMathsSession(child, {
         date: new Date().toISOString(),
-        level: child.mathsLevel ?? 'Beginner',
+        level: state?.level ?? child.mathsLevel ?? 'Beginner',
         totalScore,
         questions: results,
+      }).then(() => {
+        console.log('MathsResults: session saved successfully')
+      }).catch(e => {
+        console.error('MathsResults: failed to save session', e)
       })
+    }).catch(e => {
+      console.error('MathsResults: failed to load children', e)
     })
   }, [])
 
