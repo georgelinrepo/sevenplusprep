@@ -36,11 +36,9 @@ export function Home() {
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: 32 }}>
       <h1 style={{ textAlign: 'center', marginBottom: 8 }}>7+ School Entrance Exam Prep</h1>
-      <p style={{ textAlign: 'center', color: '#6c757d', marginBottom: 40 }}>7+ Practice</p>
-
-      {children.length === 0 && (
-        <p style={{ textAlign: 'center', color: '#6c757d' }}>No children yet — add one to get started.</p>
-      )}
+      <p style={{ textAlign: 'center', color: '#6c757d', marginBottom: 40 }}>
+        {children.length === 0 ? 'Create a child profile to get started' : 'Select a child profile or add a new one below'}
+      </p>
 
       <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
         {children.map(child => (
