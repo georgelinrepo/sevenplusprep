@@ -10,12 +10,12 @@ const TYPE_COLOURS: Record<VerbalQuestionType, string> = {
   odd_word_out: '#198754',
   analogy: '#dc3545',
   word_code: '#fd7e14',
-  hidden_word: '#6f42c1',
+  compound_word: '#6f42c1',
   letter_sequence: '#20c997',
 }
 
 const QUESTION_TYPES: VerbalQuestionType[] = [
-  'synonym', 'odd_word_out', 'analogy', 'word_code', 'hidden_word', 'letter_sequence',
+  'synonym', 'odd_word_out', 'analogy', 'word_code', 'compound_word', 'letter_sequence',
 ]
 
 const TYPE_LABELS: Record<VerbalQuestionType, string> = {
@@ -23,7 +23,7 @@ const TYPE_LABELS: Record<VerbalQuestionType, string> = {
   odd_word_out: 'Odd Word Out',
   analogy: 'Analogies',
   word_code: 'Word Codes',
-  hidden_word: 'Hidden Words',
+  compound_word: 'Compound Words',
   letter_sequence: 'Letter Sequences',
 }
 

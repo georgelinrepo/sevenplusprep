@@ -13,7 +13,7 @@ const TYPE_LABELS: Record<string, string> = {
   odd_word_out: 'Odd Word Out',
   analogy: 'Analogies',
   word_code: 'Word Codes',
-  hidden_word: 'Hidden Words',
+  compound_word: 'Compound Words',
   letter_sequence: 'Letter Sequences',
 }
 

@@ -10,7 +10,7 @@ const LEVEL_CALIBRATION: Record<string, string> = {
   Stretch: 'SPJ exam-level stretch — vocabulary and reasoning a gifted 6-year-old working at 7-9 year level would find challenging but achievable with effort. Never trivially guessable.',
 }
 
-const VALID_TYPES = new Set(['synonym', 'odd_word_out', 'analogy', 'word_code', 'hidden_word', 'letter_sequence'])
+const VALID_TYPES = new Set(['synonym', 'odd_word_out', 'analogy', 'word_code', 'compound_word', 'letter_sequence'])
 
 export const generateVerbalQuestions = onCall(
   { secrets: [anthropicKey], region: 'europe-west2' },
@@ -26,7 +26,7 @@ export const generateVerbalQuestions = onCall(
 
     const perType = Math.floor(paperLength / 6)
     const remainder = paperLength % 6
-    const types = ['synonym', 'odd_word_out', 'analogy', 'word_code', 'hidden_word', 'letter_sequence']
+    const types = ['synonym', 'odd_word_out', 'analogy', 'word_code', 'compound_word', 'letter_sequence']
     const typeCounts = types.map((t, i) => `${t}: ${perType + (i < remainder ? 1 : 0)}`).join(', ')
 
     const client = new Anthropic({ apiKey: anthropicKey.value() })
@@ -51,11 +51,11 @@ Question type specifications:
 - odd_word_out: "Circle the word that does not belong: pleasant / agreeable / delightful / tolerable / vile" — exactly 5 words in "options", one is the odd one out. The "answer" is the odd word. Reason must require genuine reasoning, not just obvious categories.
 - analogy: "Conductor is to orchestra as captain is to ___" — no options field. The "answer" is the missing word. Use abstract/conceptual relationships at higher levels.
 - word_code: At Beginner use number codes (A=1, B=2 etc): "If RAIN = 18-1-9-14, what is SNOW?" At Confident/Stretch use letter shift codes: "If BREAD is coded as CSFE B, what is WATER?" — no options field.
-- hidden_word: "Find the hidden word: The stamp editor arrived late" (answer: "ample" hidden across "stamp editor") — no options field. The "answer" is the hidden word. CRITICAL: before finalising a hidden_word question, scan the ENTIRE sentence for every possible word that could be formed across adjacent word boundaries (end of one word + start of next). The sentence must contain EXACTLY ONE such hidden word — the intended answer. Reject and rewrite any sentence where a different hidden word also appears. At higher levels: longer hidden words, less obvious position.
+- compound_word: "TOOTH + ___ = something you use to clean your teeth" — the answer completes the compound word. The definition clue makes the answer unambiguous. At Beginner: common compound words (toothbrush, sunshine, football). At Stretch: less obvious compounds (awestruck, crestfallen, threadbare). No options field. The "answer" is the completing word.
 - letter_sequence: "What letter comes next? A, E, I, M, ___" — no options field. The "answer" is the next letter. Beginner: simple +2/+3 gaps. Stretch: variable gaps e.g. B, D, G, K, P, ___ (gaps 2,3,4,5,6).
 
 Rules:
-- The "type" field MUST be exactly one of: synonym, odd_word_out, analogy, word_code, hidden_word, letter_sequence
+- The "type" field MUST be exactly one of: synonym, odd_word_out, analogy, word_code, compound_word, letter_sequence
 - Never repeat question patterns or reuse the same words
 - All answers must be unambiguously correct
 - Explanations should be short and child-friendly (max 15 words)

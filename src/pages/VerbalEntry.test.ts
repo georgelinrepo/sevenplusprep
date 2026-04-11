@@ -19,12 +19,12 @@ const analogyQ: VerbalQuestion = {
   explanation: 'A dog lives in a kennel, just as a bird lives in a nest.',
 }
 
-const hiddenQ: VerbalQuestion = {
+const compoundQ: VerbalQuestion = {
   number: 3,
-  type: 'hidden_word',
-  question: 'Find the hidden word: The stamp editor arrived late',
-  answer: 'ample',
-  explanation: 'The word "ample" is hidden across "stamp editor".',
+  type: 'compound_word',
+  question: 'TOOTH + ___ = something you use to clean your teeth',
+  answer: 'brush',
+  explanation: 'Toothbrush is the compound word.',
 }
 
 describe('markAnswers', () => {
@@ -48,12 +48,12 @@ describe('markAnswers', () => {
   })
 
   it('trims whitespace before comparing', () => {
-    const { results } = markAnswers([hiddenQ], ['  ample  '])
+    const { results } = markAnswers([compoundQ], ['  brush  '])
     expect(results[0].correct).toBe(true)
   })
 
   it('calculates totalScore as percentage of correct answers rounded', () => {
-    const { totalScore } = markAnswers([synonymQ, analogyQ, hiddenQ], ['joyful', 'nest', 'wrong'])
+    const { totalScore } = markAnswers([synonymQ, analogyQ, compoundQ], ['joyful', 'nest', 'wrong'])
     // 2 out of 3 correct = 66.666... -> rounds to 67
     expect(totalScore).toBe(67)
   })

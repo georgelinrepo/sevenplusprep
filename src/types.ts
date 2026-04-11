@@ -65,7 +65,7 @@ export type VerbalQuestionType =
   | 'odd_word_out'
   | 'analogy'
   | 'word_code'
-  | 'hidden_word'
+  | 'compound_word'
   | 'letter_sequence'
 
 export interface VerbalQuestion {
