@@ -100,6 +100,7 @@ export interface Child {
   id: string
   name: string
   createdAt: string
+  photoURL?: string
   level: Level
   consecutiveHighScores: number
   consecutiveLowScores: number

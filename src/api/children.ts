@@ -2,7 +2,8 @@
 import {
   collection, doc, addDoc, getDocs, updateDoc, deleteDoc, serverTimestamp
 } from 'firebase/firestore'
-import { db } from '../firebase'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { db, storage } from '../firebase'
 import type { Child, Level, Session, MathsSession, VerbalSession } from '../types'
 
 const LEVELS: Level[] = ['Beginner', 'Developing', 'Confident', 'Stretch']
@@ -150,6 +151,14 @@ export async function getVerbalSessions(childId: string): Promise<VerbalSession[
       } as VerbalSession
     })
     .sort((a, b) => a.date.localeCompare(b.date))
+}
+
+export async function updateChildPhoto(childId: string, file: File): Promise<string> {
+  const storageRef = ref(storage, `children/${childId}/photo`)
+  await uploadBytes(storageRef, file)
+  const photoURL = await getDownloadURL(storageRef)
+  await updateDoc(doc(db, 'children', childId), { photoURL })
+  return photoURL
 }
 
 export async function deleteChild(childId: string): Promise<void> {

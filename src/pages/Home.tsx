@@ -47,6 +47,7 @@ export function Home() {
             child={child}
             onSelect={() => navigate(`/child/${child.id}`)}
             onDelete={() => handleDeleteChild(child.id)}
+            onPhotoUpdate={(photoURL) => setChildren(prev => prev.map(c => c.id === child.id ? { ...c, photoURL } : c))}
           />
         ))}
       </div>

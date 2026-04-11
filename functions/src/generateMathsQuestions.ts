@@ -23,8 +23,8 @@ export const generateMathsQuestions = onCall(
     let response
     try {
       response = await client.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2048,
+        model: 'claude-sonnet-4-6',
+        max_tokens: 4096,
         messages: [{
           role: 'user',
           content: `Generate exactly 15 mental maths questions for a 6-7 year old child practising for the St Paul's Juniors (Colet Court) 7+ entrance exam.
@@ -39,10 +39,12 @@ Rules:
 - Phrase questions as an invigilator reads them aloud (e.g. "What is six multiplied by seven?" not "6×7=")
 - Expected answer MUST include units where applicable: money → p or £ (e.g. "45p", "£1.20"), length → cm or m, time → digits or words (e.g. "3:15"), weight → g or kg
 - For bare number answers (arithmetic, tables) no units needed
+- The "working" field MUST show step-by-step arithmetic to derive the answer — use this to verify correctness before writing the "expected" field
 
 Return ONLY a JSON array of exactly 15 objects, no markdown fences:
 [
-  { "question": "What is six multiplied by seven?", "expected": "42", "category": "tables" }
+  { "question": "What is six multiplied by seven?", "working": "6 × 7 = 42", "expected": "42", "category": "tables" },
+  { "question": "Tom has twelve sweets. He gives one quarter to his sister and eats half of what remains. How many does he have left?", "working": "quarter of 12 = 3, remaining = 12 - 3 = 9, half of 9 = 4.5", "expected": "4.5", "category": "word_problem" }
 ]`,
         }],
       })
@@ -67,7 +69,8 @@ Return ONLY a JSON array of exactly 15 objects, no markdown fences:
       if (!hasValidShape) {
         throw new Error('Question objects have unexpected shape or invalid category')
       }
-      return { questions }
+      const stripped = questions.map(({ working: _w, ...rest }: Record<string, unknown>) => rest)
+      return { questions: stripped }
     } catch {
       throw new HttpsError('internal', 'Failed to parse generated questions')
     }
