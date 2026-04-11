@@ -11,6 +11,11 @@ import { MathsPlay } from './pages/MathsPlay'
 import { MathsEntry } from './pages/MathsEntry'
 import { MathsResults } from './pages/MathsResults'
 import { MathsDashboard } from './pages/MathsDashboard'
+import { VerbalStart } from './pages/VerbalStart'
+import { VerbalPaper } from './pages/VerbalPaper'
+import { VerbalEntry } from './pages/VerbalEntry'
+import { VerbalResults } from './pages/VerbalResults'
+import { VerbalDashboard } from './pages/VerbalDashboard'
 
 export default function App() {
   return (
@@ -27,6 +32,11 @@ export default function App() {
         <Route path="/maths-entry/:childId" element={<MathsEntry />} />
         <Route path="/maths-results/:childId" element={<MathsResults />} />
         <Route path="/maths-dashboard/:childId" element={<MathsDashboard />} />
+        <Route path="/verbal-start/:childId" element={<VerbalStart />} />
+        <Route path="/verbal-paper/:childId" element={<VerbalPaper />} />
+        <Route path="/verbal-entry/:childId" element={<VerbalEntry />} />
+        <Route path="/verbal-results/:childId" element={<VerbalResults />} />
+        <Route path="/verbal-dashboard/:childId" element={<VerbalDashboard />} />
       </Routes>
     </BrowserRouter>
   )

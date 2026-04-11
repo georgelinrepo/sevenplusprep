@@ -109,6 +109,39 @@ export function ModuleSelect() {
             </button>
           </div>
         </div>
+
+        <div style={{ border: '1px solid #dee2e6', borderRadius: 12, padding: 32, minWidth: 240, textAlign: 'center' }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>🔤</div>
+          <h2 style={{ margin: '0 0 8px' }}>Verbal Reasoning</h2>
+          <span style={{
+            background: LEVEL_COLOURS[child.verbalLevel] ?? LEVEL_COLOURS['Beginner'],
+            color: 'white',
+            borderRadius: 20,
+            padding: '4px 12px',
+            fontSize: 13,
+            fontWeight: 600,
+            display: 'inline-block',
+            marginBottom: 20,
+          }}>
+            {child.verbalLevel ?? 'Beginner'}
+          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <button
+              type="button"
+              onClick={() => navigate(`/verbal-start/${child.id}`)}
+              style={{ padding: '10px 20px', cursor: 'pointer', background: '#0d6efd', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, fontSize: 15 }}
+            >
+              Start Session
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(`/verbal-dashboard/${child.id}`)}
+              style={{ padding: '10px 20px', cursor: 'pointer', background: 'transparent', border: '1px solid #dee2e6', borderRadius: 8, fontSize: 15 }}
+            >
+              View Progress
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
