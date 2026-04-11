@@ -9,7 +9,7 @@ interface LocationState {
   paperLength: number
 }
 
-function markAnswers(questions: VerbalQuestion[], childAnswers: string[]): { results: VerbalQuestionResult[]; totalScore: number } {
+export function markAnswers(questions: VerbalQuestion[], childAnswers: string[]): { results: VerbalQuestionResult[]; totalScore: number } {
   const results: VerbalQuestionResult[] = questions.map((q, i) => {
     const childAnswer = childAnswers[i] ?? ''
     const correct = childAnswer.trim().toLowerCase() === q.answer.trim().toLowerCase()
