@@ -16,7 +16,7 @@ export function markAnswers(questions: VerbalQuestion[], childAnswers: string[])
     return {
       question: q.question,
       type: q.type,
-      options: q.options,
+      ...(q.options !== undefined ? { options: q.options } : {}),
       childAnswer,
       correct,
       correctAnswer: q.answer,
