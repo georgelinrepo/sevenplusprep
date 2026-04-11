@@ -89,7 +89,7 @@ export interface VerbalQuestionResult {
 
 export interface VerbalSession {
   id: string
-  date: string
+  date: string         // ISO timestamp
   level: Level
   paperLength: number
   totalScore: number
