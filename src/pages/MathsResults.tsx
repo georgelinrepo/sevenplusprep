@@ -1,5 +1,5 @@
 // src/pages/MathsResults.tsx
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { getChildren, saveMathsSession } from '../api/children'
 import type { MathsQuestionResult } from '../types'
@@ -27,9 +27,13 @@ export function MathsResults() {
   const navigate = useNavigate()
   const { state } = useLocation() as { state: LocationState }
   const { results, totalScore } = state || {}
+  const saved = useRef(false)
 
   useEffect(() => {
-    if (!childId || !results) return
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // childId, results, totalScore come from immutable navigation state — fire once only
+    if (saved.current || !childId || !results) return
+    saved.current = true
     getChildren().then(children => {
       const child = children.find(c => c.id === childId)
       if (!child) return
