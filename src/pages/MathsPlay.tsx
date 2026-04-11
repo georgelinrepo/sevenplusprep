@@ -66,7 +66,7 @@ export function MathsPlay() {
 
   function handlePause() {
     stop()
-    if (phase === 'countdown' || phase === 'pause1') {
+    if (phase === 'countdown') {
       setPausedSeconds(seconds)
     }
     resetCountdown()
