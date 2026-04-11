@@ -66,11 +66,10 @@ function SessionHistoryItem({ session, index }: { session: MathsSession; index: 
               <span style={{ marginRight: 8 }}>{q.correct ? '✅' : '❌'}</span>
               <span style={{ color: '#6c757d', marginRight: 8 }}>Q{i + 1}</span>
               {q.question}
-              {!q.correct && (
-                <span style={{ color: '#6c757d', marginLeft: 8 }}>
-                  (wrote: <strong>{q.childAnswer || '—'}</strong> · expected: <strong>{q.expected}</strong>)
-                </span>
-              )}
+              <span style={{ color: '#6c757d', marginLeft: 8 }}>
+                (wrote: <strong>{q.childAnswer || '—'}</strong>
+                {!q.correct && <> · expected: <strong>{q.expected}</strong></>})
+              </span>
             </div>
           ))}
         </div>
