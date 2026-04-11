@@ -1,7 +1,7 @@
 // src/api/functions.ts
 import { httpsCallable } from 'firebase/functions'
 import { fns } from '../firebase'
-import type { Level, DictationError, MathsQuestion, MathsQuestionResult } from '../types'
+import type { Level, DictationError, MathsQuestion, MathsQuestionResult, VerbalQuestion } from '../types'
 
 const _generateSentences = httpsCallable<{ level: Level }, { sentences: string[] }>(
   fns, 'generateSentences'
@@ -58,4 +58,14 @@ export async function markMathsSession(
 ): Promise<{ results: MathsQuestionResult[]; totalScore: number }> {
   const result = await _markMathsSession({ questions, childAnswers })
   return result.data
+}
+
+const _generateVerbalQuestions = httpsCallable<
+  { level: Level; paperLength: number },
+  { questions: VerbalQuestion[] }
+>(fns, 'generateVerbalQuestions')
+
+export async function generateVerbalQuestions(level: Level, paperLength: number): Promise<VerbalQuestion[]> {
+  const result = await _generateVerbalQuestions({ level, paperLength })
+  return result.data.questions
 }
