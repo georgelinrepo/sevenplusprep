@@ -1,8 +1,8 @@
 // src/pages/Dictation.tsx
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { getChildren } from '../api/children'
-import { generateSentences, markAnswer } from '../api/functions'
+import { markAnswer } from '../api/functions'
 import { useTTS } from '../hooks/useTTS'
 import { useCountdown } from '../hooks/useCountdown'
 import { CountdownTimer } from '../components/CountdownTimer'
@@ -13,11 +13,13 @@ type Phase = 'loading' | 'read1' | 'pause1' | 'read2' | 'pause2' | 'read3' | 'pa
 export function Dictation() {
   const { childId } = useParams<{ childId: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { speak } = useTTS()
   const { seconds, start: startCountdown, reset: resetCountdown } = useCountdown()
 
   const [child, setChild] = useState<Child | null>(null)
   const [sentences, setSentences] = useState<string[]>([])
+  const [sessionLevel, setSessionLevel] = useState<Level>('Beginner')
   const [currentIndex, setCurrentIndex] = useState(0)
   const [phase, setPhase] = useState<Phase>('loading')
   const [childAnswer, setChildAnswer] = useState('')
@@ -32,8 +34,10 @@ export function Dictation() {
       const found = children.find(c => c.id === childId)
       if (!found) return
       setChild(found)
-      const generated = await generateSentences(found.level as Level)
-      setSentences(generated)
+      const state = location.state as { sentences?: string[]; level?: Level } | null
+      const levelToUse: Level = state?.level ?? (found.level as Level) ?? 'Beginner'
+      setSessionLevel(levelToUse)
+      setSentences(state?.sentences ?? [])
       setPhase('read1')
     }
     init()
@@ -92,7 +96,7 @@ export function Dictation() {
       resetCountdown()
       setPhase('read1')
     } else {
-      navigate(`/results/${childId}`, { state: { results, level: child?.level } })
+      navigate(`/results/${childId}`, { state: { results, level: sessionLevel } })
     }
   }
 
@@ -103,7 +107,7 @@ export function Dictation() {
   return (
     <div style={{ maxWidth: 600, margin: '40px auto', padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-        <span style={{ color: '#6c757d' }}>{child.name} — {child.level}</span>
+        <span style={{ color: '#6c757d' }}>{child.name} — {sessionLevel}</span>
         <span style={{ fontWeight: 700 }}>Sentence {currentIndex + 1} of 3</span>
       </div>
 
