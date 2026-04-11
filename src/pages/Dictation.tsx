@@ -37,11 +37,16 @@ export function Dictation() {
       const state = location.state as { sentences?: string[]; level?: Level } | null
       const levelToUse: Level = state?.level ?? (found.level as Level) ?? 'Beginner'
       setSessionLevel(levelToUse)
-      setSentences(state?.sentences ?? [])
+      const stateSentences = state?.sentences
+      if (!stateSentences || stateSentences.length === 0) {
+        navigate(`/session-start/${childId}`, { replace: true })
+        return
+      }
+      setSentences(stateSentences)
       setPhase('read1')
     }
     init()
-  }, [childId])
+  }, [childId, location])
 
   // Trigger TTS on read phases
   useEffect(() => {
@@ -101,7 +106,7 @@ export function Dictation() {
   }
 
   if (phase === 'loading' || !child) {
-    return <div style={{ textAlign: 'center', padding: 48, fontSize: 20 }}>Generating sentences...</div>
+    return <div style={{ textAlign: 'center', padding: 48, fontSize: 20 }}>Loading...</div>
   }
 
   return (
