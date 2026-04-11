@@ -39,7 +39,7 @@ export function MathsResults() {
       if (!child) return
       saveMathsSession(child, {
         date: new Date().toISOString(),
-        level: child.mathsLevel,
+        level: child.mathsLevel ?? 'Beginner',
         totalScore,
         questions: results,
       })

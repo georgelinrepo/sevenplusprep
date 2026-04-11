@@ -91,9 +91,9 @@ export async function saveMathsSession(child: Child, session: Omit<MathsSession,
     { ...session, date: serverTimestamp() }
   )
   const pseudo = {
-    level: child.mathsLevel,
-    consecutiveHighScores: child.mathsConsecutiveHighScores,
-    consecutiveLowScores: child.mathsConsecutiveLowScores,
+    level: child.mathsLevel ?? 'Beginner',
+    consecutiveHighScores: child.mathsConsecutiveHighScores ?? 0,
+    consecutiveLowScores: child.mathsConsecutiveLowScores ?? 0,
   }
   const progression = evaluateProgression(pseudo, session.totalScore)
   await updateDoc(doc(db, 'children', child.id), {
