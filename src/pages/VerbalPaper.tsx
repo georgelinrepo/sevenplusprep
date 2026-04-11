@@ -73,7 +73,7 @@ export function VerbalPaper() {
         {/* Question Paper */}
         <div style={{ fontFamily: 'Georgia, serif', lineHeight: 1.6 }}>
           <h1 style={{ textAlign: 'center', fontSize: 18, marginBottom: 4 }}>
-            St Paul's Juniors 7+ Verbal Reasoning Practice Paper
+            7+ School Entrance Exam — Verbal Reasoning Practice Paper
           </h1>
           <p style={{ textAlign: 'center', fontSize: 14, color: '#6c757d', marginBottom: 24 }}>
             {level} · {paperLength} questions

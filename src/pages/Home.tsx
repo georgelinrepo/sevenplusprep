@@ -35,8 +35,8 @@ export function Home() {
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: 32 }}>
-      <h1 style={{ textAlign: 'center', marginBottom: 8 }}>SevenPlusPrep</h1>
-      <p style={{ textAlign: 'center', color: '#6c757d', marginBottom: 40 }}>SPJ 7+ Practice</p>
+      <h1 style={{ textAlign: 'center', marginBottom: 8 }}>7+ School Entrance Exam Prep</h1>
+      <p style={{ textAlign: 'center', color: '#6c757d', marginBottom: 40 }}>7+ Practice</p>
 
       {children.length === 0 && (
         <p style={{ textAlign: 'center', color: '#6c757d' }}>No children yet — add one to get started.</p>
