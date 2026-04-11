@@ -51,7 +51,7 @@ Question type specifications:
 - odd_word_out: "Circle the word that does not belong: pleasant / agreeable / delightful / tolerable / vile" — exactly 5 words in "options", one is the odd one out. The "answer" is the odd word. Reason must require genuine reasoning, not just obvious categories.
 - analogy: "Conductor is to orchestra as captain is to ___" — no options field. The "answer" is the missing word. Use abstract/conceptual relationships at higher levels.
 - word_code: At Beginner use number codes (A=1, B=2 etc): "If RAIN = 18-1-9-14, what is SNOW?" At Confident/Stretch use letter shift codes: "If BREAD is coded as CSFE B, what is WATER?" — no options field.
-- hidden_word: "Find the hidden word: The stamp editor arrived late" (answer: "ample" hidden across "stamp editor") — no options field. The "answer" is the hidden word. At Advanced: longer hidden words, less obvious position.
+- hidden_word: "Find the hidden word: The stamp editor arrived late" (answer: "ample" hidden across "stamp editor") — no options field. The "answer" is the hidden word. CRITICAL: before finalising a hidden_word question, scan the ENTIRE sentence for every possible word that could be formed across adjacent word boundaries (end of one word + start of next). The sentence must contain EXACTLY ONE such hidden word — the intended answer. Reject and rewrite any sentence where a different hidden word also appears. At higher levels: longer hidden words, less obvious position.
 - letter_sequence: "What letter comes next? A, E, I, M, ___" — no options field. The "answer" is the next letter. Beginner: simple +2/+3 gaps. Stretch: variable gaps e.g. B, D, G, K, P, ___ (gaps 2,3,4,5,6).
 
 Rules:
