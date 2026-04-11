@@ -164,7 +164,7 @@ export function MathsDashboard() {
           </ResponsiveContainer>
 
           <h3 style={{ marginTop: 32 }}>Errors by Category (last 10 sessions)</h3>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart data={errorData}>
               <XAxis dataKey="session" />
               <YAxis allowDecimals={false} />
