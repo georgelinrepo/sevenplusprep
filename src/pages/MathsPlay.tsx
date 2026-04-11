@@ -32,8 +32,9 @@ export function MathsPlay() {
     if (!questions[currentIndex]) return
     let cancelled = false
 
+    const questionText = `Question ${currentIndex + 1}: ${questions[currentIndex].question}`
     if (phase === 'read1') {
-      speak(questions[currentIndex].question, () => {
+      speak(questionText, () => {
         if (!cancelled) setPhase('pause1')
       })
     } else if (phase === 'pause1') {
@@ -41,7 +42,7 @@ export function MathsPlay() {
         if (!cancelled) setPhase('read2')
       })
     } else if (phase === 'read2') {
-      speak(questions[currentIndex].question, () => {
+      speak(questionText, () => {
         if (!cancelled) setPhase('countdown')
       })
     } else if (phase === 'countdown') {
