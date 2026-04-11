@@ -88,6 +88,30 @@ describe('evaluateProgression — maths pseudo-child pattern', () => {
   })
 })
 
+describe('evaluateProgression — verbal pseudo-child pattern', () => {
+  it('levels up after 3 consecutive high scores via verbal pseudo-child', () => {
+    const pseudo = {
+      level: 'Beginner' as Level,
+      consecutiveHighScores: 3,
+      consecutiveLowScores: 0,
+    }
+    const result = evaluateProgression(pseudo, 85)
+    expect(result.level).toBe('Developing')
+    expect(result.consecutiveHighScores).toBe(0)
+  })
+
+  it('does not cross-contaminate verbal fields with maths fields', () => {
+    const pseudo = {
+      level: 'Confident' as Level,
+      consecutiveHighScores: 0,
+      consecutiveLowScores: 0,
+    }
+    const result = evaluateProgression(pseudo, 40)
+    expect(result.consecutiveLowScores).toBe(1)
+    expect(result.level).toBe('Confident')
+  })
+})
+
 describe('children API exports', () => {
   it('exports saveMathsSession', async () => {
     const mod = await import('./children')
@@ -102,5 +126,17 @@ describe('children API exports', () => {
   it('exports deleteChild', async () => {
     const mod = await import('./children')
     expect(typeof mod.deleteChild).toBe('function')
+  })
+})
+
+describe('children API verbal exports', () => {
+  it('exports saveVerbalSession', async () => {
+    const mod = await import('./children')
+    expect(typeof mod.saveVerbalSession).toBe('function')
+  })
+
+  it('exports getVerbalSessions', async () => {
+    const mod = await import('./children')
+    expect(typeof mod.getVerbalSessions).toBe('function')
   })
 })

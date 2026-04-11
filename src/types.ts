@@ -60,6 +60,42 @@ export interface MathsSession {
   questions: MathsQuestionResult[]
 }
 
+export type VerbalQuestionType =
+  | 'synonym'
+  | 'odd_word_out'
+  | 'analogy'
+  | 'word_code'
+  | 'hidden_word'
+  | 'letter_sequence'
+
+export interface VerbalQuestion {
+  number: number
+  type: VerbalQuestionType
+  question: string
+  options?: string[]    // present for synonym and odd_word_out only
+  answer: string
+  explanation: string
+}
+
+export interface VerbalQuestionResult {
+  question: string
+  type: VerbalQuestionType
+  options?: string[]
+  childAnswer: string
+  correct: boolean
+  correctAnswer: string
+  explanation: string
+}
+
+export interface VerbalSession {
+  id: string
+  date: string
+  level: Level
+  paperLength: number
+  totalScore: number
+  questions: VerbalQuestionResult[]
+}
+
 export interface Child {
   id: string
   name: string
@@ -70,6 +106,9 @@ export interface Child {
   mathsLevel: Level
   mathsConsecutiveHighScores: number
   mathsConsecutiveLowScores: number
+  verbalLevel: Level
+  verbalConsecutiveHighScores: number
+  verbalConsecutiveLowScores: number
 }
 
 export interface GeneratedSentence {
