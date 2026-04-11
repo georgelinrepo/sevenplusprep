@@ -90,7 +90,7 @@ export function ModuleSelect() {
             display: 'inline-block',
             marginBottom: 20,
           }}>
-            {child.mathsLevel}
+            {child.mathsLevel ?? 'Beginner'}
           </span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <button

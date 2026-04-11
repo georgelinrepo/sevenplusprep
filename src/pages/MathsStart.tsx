@@ -23,7 +23,7 @@ export function MathsStart() {
     setGenerating(true)
     setError(null)
     try {
-      const questions: MathsQuestion[] = await generateMathsQuestions(child.mathsLevel)
+      const questions: MathsQuestion[] = await generateMathsQuestions(child.mathsLevel ?? 'Beginner')
       navigate(`/maths-play/${child.id}`, { state: { questions } })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to generate questions — please try again')
@@ -37,7 +37,7 @@ export function MathsStart() {
     <div style={{ maxWidth: 500, margin: '80px auto', padding: 32, textAlign: 'center' }}>
       <h1>{child.name}</h1>
       <div style={{ fontSize: 20, color: '#6c757d', marginBottom: 8 }}>
-        Maths level: <strong>{child.mathsLevel}</strong>
+        Maths level: <strong>{child.mathsLevel ?? 'Beginner'}</strong>
       </div>
       <p style={{ color: '#6c757d', marginBottom: 40 }}>
         15 questions, each read aloud twice.<br />
