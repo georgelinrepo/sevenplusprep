@@ -100,7 +100,8 @@ Return ONLY a JSON array of exactly ${paperLength} objects, no markdown fences:
         if (typeof obj.question !== 'string') return false
         if (typeof obj.answer !== 'string') return false
         if (typeof obj.explanation !== 'string') return false
-        if ((obj.type === 'synonym' || obj.type === 'odd_word_out') && (!Array.isArray(obj.options) || (obj.options as unknown[]).length < 4)) return false
+        if (obj.type === 'synonym' && (!Array.isArray(obj.options) || (obj.options as unknown[]).length !== 4)) return false
+        if (obj.type === 'odd_word_out' && (!Array.isArray(obj.options) || (obj.options as unknown[]).length !== 5)) return false
         return true
       })
       if (!hasValidShape) {
@@ -109,7 +110,7 @@ Return ONLY a JSON array of exactly ${paperLength} objects, no markdown fences:
       return { questions }
     } catch (e) {
       console.error('Parse error:', e, 'Raw:', text)
-      throw new HttpsError('internal', 'Failed to parse generated questions')
+      throw new HttpsError('internal', e instanceof Error ? e.message : 'Failed to parse generated questions')
     }
   }
 )
