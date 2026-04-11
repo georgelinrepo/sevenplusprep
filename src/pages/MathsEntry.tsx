@@ -13,7 +13,7 @@ export function MathsEntry() {
   const { state } = useLocation() as { state: LocationState }
 
   const questions: MathsQuestion[] = state?.questions ?? []
-  const [answers, setAnswers] = useState<string[]>(Array(15).fill(''))
+  const [answers, setAnswers] = useState<string[]>(() => Array(questions.length || 15).fill(''))
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -71,7 +71,7 @@ export function MathsEntry() {
         disabled={!allFilled || submitting}
         style={{
           width: '100%', padding: '16px', fontSize: 18,
-          cursor: allFilled ? 'pointer' : 'not-allowed',
+          cursor: allFilled && !submitting ? 'pointer' : 'not-allowed',
           background: allFilled ? '#198754' : '#6c757d',
           color: 'white', border: 'none', borderRadius: 8, fontWeight: 600,
         }}
