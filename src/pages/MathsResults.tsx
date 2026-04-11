@@ -57,8 +57,8 @@ export function MathsResults() {
   return (
     <div style={{ maxWidth: 640, margin: '40px auto', padding: 24 }}>
       <h1 style={{ textAlign: 'center', marginBottom: 4 }}>Session Complete</h1>
-      <div style={{ textAlign: 'center', fontSize: 56, fontWeight: 700, color: scoreColour, marginBottom: 4 }}>
-        {correctCount} / 15
+      <div style={{ textAlign: 'center', fontSize: 48, fontWeight: 700, color: scoreColour, marginBottom: 4 }}>
+        {correctCount} / 15 correct
       </div>
       <div style={{ textAlign: 'center', fontSize: 24, color: scoreColour, marginBottom: 32 }}>
         {totalScore}%
