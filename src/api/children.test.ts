@@ -14,6 +14,9 @@ describe('evaluateProgression', () => {
     mathsLevel: 'Beginner',
     mathsConsecutiveHighScores: 0,
     mathsConsecutiveLowScores: 0,
+    verbalLevel: 'Beginner',
+    verbalConsecutiveHighScores: 0,
+    verbalConsecutiveLowScores: 0,
   }
 
   it('levels up after 3 consecutive high scores', () => {
