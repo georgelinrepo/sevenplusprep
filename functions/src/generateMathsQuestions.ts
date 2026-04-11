@@ -35,7 +35,7 @@ Ordering: Q1-5 straightforward arithmetic, Q6-10 tables/fractions/money/time, Q1
 
 Rules:
 - No more than 4 questions from any single category
-- Valid categories: arithmetic, tables, fractions, money, time, word_problem, sequence, measures, shape, reasoning
+- The "category" field MUST be one of these exact lowercase strings (no other values allowed): arithmetic, tables, fractions, money, time, word_problem, sequence, measures, shape, reasoning
 - Phrase questions as an invigilator reads them aloud (e.g. "What is six multiplied by seven?" not "6×7=")
 - Expected answer MUST include units where applicable: money → p or £ (e.g. "45p", "£1.20"), length → cm or m, time → digits or words (e.g. "3:15"), weight → g or kg
 - For bare number answers (arithmetic, tables) no units needed
@@ -58,13 +58,14 @@ Return ONLY a JSON array of exactly 15 objects, no markdown fences:
       if (!Array.isArray(questions) || questions.length !== 15) {
         throw new Error('Expected array of 15 questions')
       }
+      const VALID_CATEGORIES = new Set(['arithmetic', 'tables', 'fractions', 'money', 'time', 'word_problem', 'sequence', 'measures', 'shape', 'reasoning'])
       const hasValidShape = questions.every((q: unknown) =>
         typeof (q as Record<string, unknown>).question === 'string' &&
         typeof (q as Record<string, unknown>).expected === 'string' &&
-        typeof (q as Record<string, unknown>).category === 'string'
+        VALID_CATEGORIES.has((q as Record<string, unknown>).category as string)
       )
       if (!hasValidShape) {
-        throw new Error('Question objects have unexpected shape')
+        throw new Error('Question objects have unexpected shape or invalid category')
       }
       return { questions }
     } catch {
